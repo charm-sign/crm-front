@@ -42,119 +42,141 @@ export const constantRoutes = [
     component: () => import('@/views/404'),
     hidden: true
   },
-
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
+    redirect: '/crm',
     children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      path: 'crm',
+      name: 'Crm',
+      component: () => import('@/views/personal/index'),
+      meta: { title : '客户关系管理系统', icon: 'guide' }
     }]
   },
-
   {
-    path: '/example',
+    path: '/',
     component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'el-icon-s-help' },
+    redirect: '/personal',
+    children: [{
+      path: 'personal',
+      name: 'Personal',
+      component: () => import('@/views/personal/index'),
+      meta: { title: '个人中心', icon: 'dashboard' }
+    }]
+  },
+  {
+    path: '/system',
+    component: Layout,
+    redirect: '/system/role',
+    name: 'System',
+    meta: { title: '系统设置', icon: 'international' },
     children: [
       {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
+        path: 'role',
+        name: 'Role',
+        component: () => import('@/views/system/role/index'),
+        meta: { title: '角色管理' }
       },
       {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
-      }
+        path: 'permission',
+        name: 'Permission',
+        component: () => import('@/views/system/permission/index'),
+        meta: { title: '权限管理' }
+      },
+      {
+        path: 'department',
+        name: 'Department',
+        component: () => import('@/views/system/department/index'),
+        meta: { title: '部门管理' }
+      },
+      {
+        path: 'employee',
+        name: 'Employee',
+        component: () => import('@/views/system/employee/index'),
+        meta: { title: '员工管理' }
+      },
+      {
+        path: 'dictionaryl',
+        name: 'Dictionaryl',
+        component: () => import('@/views/system/dictionary/list'),
+        meta: { title: '字典列表' }
+      },
+      {
+        path: 'dictionaryd',
+        name: 'Dictionaryd',
+        component: () => import('@/views/system/dictionary/details'),
+        meta: { title: '字典明细' }
+      },
+    ]
+  },
+  {
+    path: '/customer',
+    component: Layout,
+    redirect: '/customer/table',
+    name: 'Customer',
+    meta: { title: '客户管理', icon: 'peoples' },
+    children: [
+      {
+        path: 'potential',
+        name: 'Potential',
+        component: () => import('@/views/customer/potential'),
+        meta: { title: '潜在客户管理' }
+      },
+      {
+        path: 'official',
+        name: 'Official',
+        component: () => import('@/views/customer/official'),
+        meta: { title: '正式客户管理' }
+      },
+      {
+        path: 'resource',
+        name: 'Resource',
+        component: () => import('@/views/customer/resource'),
+        meta: { title: '客户资源池' }
+      },
+      {
+        path: 'followHistory',
+        name: 'FollowHistory',
+        component: () => import('@/views/customer/followHistory'),
+        meta: { title: '跟进历史' }
+      },
+      {
+        path: 'handoverHistory',
+        name: 'HandoverHistory',
+        component: () => import('@/views/customer/handoverHistory'),
+        meta: { title: '移交历史' }
+      },
     ]
   },
 
+
   {
-    path: '/form',
+    path: '/statistics',
     component: Layout,
     children: [
       {
         path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
+        name: 'Statistics',
+        component: () => import('@/views/statistics/index'),
+        meta: { title: '统计分析', icon: 'chart' }
       }
     ]
-  },
+  }
+]
 
-  {
-    path: '/nested',
-    component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
-    meta: {
-      title: 'Nested',
-      icon: 'nested'
-    },
-    children: [
-      {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: 'Menu1' },
-        children: [
-          {
-            path: 'menu1-1',
-            component: () => import('@/views/nested/menu1/menu1-1'),
-            name: 'Menu1-1',
-            meta: { title: 'Menu1-1' }
-          },
-          {
-            path: 'menu1-2',
-            component: () => import('@/views/nested/menu1/menu1-2'),
-            name: 'Menu1-2',
-            meta: { title: 'Menu1-2' },
-            children: [
-              {
-                path: 'menu1-2-1',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-                name: 'Menu1-2-1',
-                meta: { title: 'Menu1-2-1' }
-              },
-              {
-                path: 'menu1-2-2',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-                name: 'Menu1-2-2',
-                meta: { title: 'Menu1-2-2' }
-              }
-            ]
-          },
-          {
-            path: 'menu1-3',
-            component: () => import('@/views/nested/menu1/menu1-3'),
-            name: 'Menu1-3',
-            meta: { title: 'Menu1-3' }
-          }
-        ]
-      },
-      {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        name: 'Menu2',
-        meta: { title: 'menu2' }
-      }
-    ]
-  },
+/**
+ * asyncRoutes
+ * the routes that need to be dynamically loaded based on user roles
+ */
+export const asyncRoutes = [
+
 
   {
     path: 'external-link',
     component: Layout,
     children: [
       {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
+        path: 'https://gitee.com/charmsign/crm-front',
         meta: { title: 'External Link', icon: 'link' }
       }
     ]
