@@ -1,16 +1,17 @@
 <template>
   <div class="app-container">
-    统计分析
+    <el-card>统计分析</el-card>
     <el-divider></el-divider>
 
     <!--查询表单-->
-    <el-form :inline="true" :model="formInline" class="demo-form-inline">
+    <el-card>
+    <el-form :inline="true" class="demo-form-inline">
       <el-form-item label="关键字">
-        <el-input v-model="formInline.user" placeholder="请输入姓名"></el-input>
+        <el-input v-model="queryForm.name" placeholder="请输入员工姓名"></el-input>
       </el-form-item>
       <el-form-item label="时间段查询">
         <el-date-picker
-          v-model="formInline.user"
+          v-model="queryForm.startTime"
           type="datetime"
           placeholder="开始时间"
           value-format="yyyy-MM-dd HH:mm:ss"
@@ -19,7 +20,7 @@
       </el-form-item>
       <el-form-item>
         <el-date-picker
-          v-model="formInline.user"
+          v-model="queryForm.endTime"
           type="datetime"
           placeholder="结束时间"
           value-format="yyyy-MM-dd HH:mm:ss"
@@ -27,33 +28,33 @@
         />
       </el-form-item>
       <el-form-item label="分组类型">
-        <el-select v-model="formInline.region" placeholder="员工">
-          <!-- 查询出来的 -->
-          <el-option label="员工" value="shanghai"></el-option>
-          <el-option label="年" value="beijing"></el-option>
-          <el-option label="月" value="hbjn"></el-option>
-          <el-option label="日" value="qwe"></el-option>
+        <el-select v-model="queryForm.type" placeholder="员工">
+          <el-option label="员工" value="1"></el-option>
+          <el-option label="年" value="2"></el-option>
+          <el-option label="月" value="3"></el-option>
+          <el-option label="日" value="4"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit">查询</el-button>
+        <el-button type="primary" @click="getList()">查询</el-button>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" plain @click="onSubmit">柱状图</el-button>
-        <el-button type="primary" plain @click="onSubmit">饼状图</el-button>
+        <el-button type="primary" plain @click="chart()">柱状图显示</el-button>
+        <el-button type="primary" plain @click="chart2()">饼状图显示</el-button>
       </el-form-item>
     </el-form>
     <el-table
       ref="multipleTable"
-      :data="tableData"
+      :data="DataList"
       tooltip-effect="dark"
       style="width: 100%"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column label="分组类型" width="120">
-        <template slot-scope="scope">{{ scope.row.date }}</template>
+      <el-table-column prop="name" label="分组类型" width="400">
+       
       </el-table-column>
-      <el-table-column prop="name" label="潜在客户新增数" width="120">
+      <el-table-column prop="count" label="潜在客户新增数" width="200">
+
       </el-table-column>
     </el-table>
     <!-- 分页 -->
@@ -61,63 +62,70 @@
       background
       layout="total,prev, pager, next"
       :current-page="pageNo"
-      :page-size="2"
-      :total="10"
-    >
+      :page-size="pageSize"
+      :total="total"
+        @current-change="getList"
+    align="right">
     </el-pagination>
+
+
+
+    </el-card>
   </div>
 </template>
 
 <script>
+import custApi from '@/api/customer/customer'
 export default {
   data() {
     return {
-      tableData: [
+       // 分页查询数据
+      DataList: [
         {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-08",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-06",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-07",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
+          name: "",
+          count:""
+        }
       ],
-      formInline: {
-        user: "",
-        region: "",
+      pageNo: 1,
+      pageSize: 10,
+      total: 0,
+     
+      queryForm: {
+        name: "",
+        startTime: "",
+        endTime: "",
+        type:"",
       },
+     
       multipleSelection: [],
     };
   },
-
+  created() { 
+this.getList()
+  },
   methods: {
+// 分页条件查询
+    getList(pageNo = 1) {
+      this.pageNo = pageNo;
+      custApi
+        .statistical(this.pageNo, this.pageSize, this.queryForm)
+        .then((response) => {
+          this.DataList = response.data.statisticalList;
+          this.total = response.data.total;
+        });
+    },
+    //柱状图
+    chart() {
+  
+      this.$router.push({ path: '/statistics/chart', query: {  DataList:this.DataList   } });
+},
+   //饼图
+    chart2() {
+  
+      this.$router.push({ path: '/statistics/chart2', query: {  DataList:this.DataList   } });
+      // this.$router.push({ path: '/statistics/2', query: {  DataList:this.DataList   } });
+
+},
     toggleSelection(rows) {
       if (rows) {
         rows.forEach((row) => {

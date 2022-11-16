@@ -1,38 +1,47 @@
 <template>
   <div class="app-container">
-    部门管理
+    <el-card class="box-card" shadow="always">
+    部门管理</el-card>
     <el-divider></el-divider>
+    <el-card class="box-card" shadow="always">
     <el-row>
       <el-button type="primary" @click="resetData">新增</el-button>
     </el-row>
 
     <el-table
+     v-loading="loading"
       ref="singleTable"
       :data="departmentList"
       highlight-current-row
       @current-change="handleCurrentChange"
       style="width: 100%"
     >
-      <el-table-column type="index" label="编号" width="100"> </el-table-column>
+
+      <el-table-column label="序号" width="70" align="center">
+        <template slot-scope="scope">
+          <!-- 固定公式 -->
+          {{ (pageNo - 1) * pageSize + scope.$index + 1 }}
+        </template>
+      </el-table-column>
       <el-table-column
         property="name"
         label="部门名称"
         width="450"
-      ></el-table-column>
+       align="center"></el-table-column>
       <el-table-column
         property="sn"
         label="部门编号"
         width="550"
-      ></el-table-column>
-      <el-table-column fixed="right" label="操作" width="180">
+       align="center"></el-table-column>
+      <el-table-column fixed="right" label="操作" width="180" align="center">
         <template slot-scope="scope">
-          <el-button @click="getInfo(scope.row.id)" type="text" size="small"
+          <el-button @click="getInfo(scope.row.id)" type="text" 
             >编辑</el-button
           >
           <el-divider direction="vertical"></el-divider>
           <el-button
             type="text"
-            size="small"
+            
             @click="deleteDepartment(scope.row.id)"
             >删除</el-button
           >
@@ -48,7 +57,7 @@
       :page-size="pageSize"
       :total="total"
       @current-change="getList"
-    >
+    align="right">
     </el-pagination>
 
     <!-- 模态窗口 -->
@@ -69,6 +78,7 @@
         >
       </div>
     </el-dialog>
+    </el-card>
   </div>
 </template>
 

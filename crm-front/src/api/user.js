@@ -19,7 +19,7 @@ export function login(data) {
   return request({
     url: '/sysService/user/login',
     method: 'post',
-    data
+    data:data
   })
 }
 
@@ -32,7 +32,7 @@ export function getInfo(token) {
 }
 export function logout() {
   return request({
-    url: '/vue-admin-template/user/logout',
+    url: '/sysService/user/logout',
     method: 'post'
   })
 }

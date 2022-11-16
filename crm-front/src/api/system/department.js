@@ -1,6 +1,6 @@
 import request from '@/utils/request'   //封装了axios
 export default {    //写法，不用每次写方法都导出
-    //查询部门列表
+    //分页查询部门列表
     list(pageNo, pageSize) {
         return request({
             url: `sysService/department/list/${pageNo}/${pageSize}`,
@@ -36,5 +36,13 @@ export default {    //写法，不用每次写方法都导出
             method: 'post',
             data: departmentForm
         }) 
+    },
+        //查询部门列表
+    lists() {
+        return request({
+            url: `sysService/department/lists`,
+            method: 'get',
+            
+        })
     }
 }

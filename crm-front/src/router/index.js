@@ -42,17 +42,7 @@ export const constantRoutes = [
     component: () => import('@/views/404'),
     hidden: true
   },
-  {
-    path: '/',
-    component: Layout,
-    redirect: '/crm',
-    children: [{
-      path: 'crm',
-      name: 'Crm',
-      component: () => import('@/views/personal/index'),
-      meta: { title : '客户关系管理系统', icon: 'guide' }
-    }]
-  },
+
   {
     path: '/',
     component: Layout,
@@ -62,7 +52,8 @@ export const constantRoutes = [
       name: 'Personal',
       component: () => import('@/views/personal/index'),
       meta: { title: '个人中心', icon: 'dashboard' }
-    }]
+    },
+      ]
   },
   {
     path: '/system',
@@ -159,7 +150,22 @@ export const constantRoutes = [
         name: 'Statistics',
         component: () => import('@/views/statistics/index'),
         meta: { title: '统计分析', icon: 'chart' }
-      }
+      },
+      {
+        path: 'chart',
+        hidden: true,
+        name: 'StatisticsDayChart',
+        component: () => import('@/views/statistics/chart'),
+        meta: { title: '柱状图' }
+      } ,
+      {
+        path: 'chart2',
+        hidden: true,
+        breadcrumb: false,
+        name: 'StatisticsDayChart',
+        component: () => import('@/views/statistics/chart2'),
+        meta: { title: '饼图' }
+      }  
     ]
   }
 ]

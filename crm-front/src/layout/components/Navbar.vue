@@ -16,11 +16,12 @@
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <router-link to="/">
-            <el-dropdown-item > 个人中心 </el-dropdown-item>
+            <el-dropdown-item  class="el-icon-user"> 个人中心 </el-dropdown-item> 
+           
           </router-link>
 
           <el-dropdown-item divided @click.native="logout">
-            <span style="display: block">退出登录</span>
+            <i class="el-icon-switch-button">&nbsp;&nbsp; 安全退出</i>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>

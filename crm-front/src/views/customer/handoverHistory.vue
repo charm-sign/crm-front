@@ -1,16 +1,20 @@
 <template>
   <div class="app-container">
-   移交历史
+    <el-card>移交历史</el-card>
     <el-divider></el-divider>
 
     <!--查询表单-->
-    <el-form :inline="true" :model="formInline" class="demo-form-inline">
+    <el-card>
+    <el-form :inline="true" class="demo-form-inline">
       <el-form-item label="关键字">
-        <el-input v-model="formInline.user" placeholder="请输入姓名"></el-input>
+        <el-input
+          v-model="customerHandoverQuery.name"
+          placeholder="请输入客户姓名"
+        ></el-input>
       </el-form-item>
       <el-form-item label="跟进时间">
         <el-date-picker
-          v-model="formInline.user"
+          v-model="customerHandoverQuery.startTime"
           type="datetime"
           placeholder="选择开始时间"
           value-format="yyyy-MM-dd HH:mm:ss"
@@ -19,7 +23,7 @@
       </el-form-item>
       <el-form-item>
         <el-date-picker
-          v-model="formInline.user"
+          v-model="customerHandoverQuery.endTime"
           type="datetime"
           placeholder="选择结束时间"
           value-format="yyyy-MM-dd HH:mm:ss"
@@ -27,29 +31,65 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button @click="onSubmit">查询</el-button>
+        <el-button type="primary" @click="getList()" icon="el-icon-search" plain
+          >查询</el-button
+        >
       </el-form-item>
     </el-form>
     <el-table
       ref="multipleTable"
-      :data="tableData"
+      :data="customerHandoverList"
       tooltip-effect="dark"
       style="width: 100%"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="index" label="编号" width="50"> </el-table-column>
-      <el-table-column label="客户姓名" width="120">
-        <template slot-scope="scope">{{ scope.row.date }}</template>
+      <el-table-column label="序号" width="70" align="center">
+        <template slot-scope="scope">
+          <!-- 固定公式 -->
+          {{ (pageNo - 1) * pageSize + scope.$index + 1 }}
+        </template>
       </el-table-column>
-      <el-table-column prop="name" label="操作日期" width="120">
+      <el-table-column
+        prop="customerName"
+        label="客户姓名"
+        width="120"
+        align="center"
+      >
       </el-table-column>
-      <el-table-column prop="name" label="操作人" show-overflow-tooltip>
+      <el-table-column
+        prop="transTime"
+        label="操作日期"
+        width="200"
+        align="center"
+      >
       </el-table-column>
-      <el-table-column prop="address" label="旧营销人员" show-overflow-tooltip>
+      <el-table-column
+        prop="operator"
+        label="操作人"
+        show-overflow-tooltip
+        align="center"
+      >
       </el-table-column>
-      <el-table-column prop="address" label="新营销人员" show-overflow-tooltip>
+      <el-table-column
+        prop="oldMarket"
+        label="旧营销人员"
+        show-overflow-tooltip
+        align="center"
+      >
       </el-table-column>
-      <el-table-column prop="address" label="移交原因" show-overflow-tooltip>
+      <el-table-column
+        prop="newMarket"
+        label="新营销人员"
+        show-overflow-tooltip
+        align="center"
+      >
+      </el-table-column>
+      <el-table-column
+        prop="transReason"
+        label="移交原因"
+        show-overflow-tooltip
+        align="center"
+      >
       </el-table-column>
     </el-table>
     <!-- 分页 -->
@@ -57,63 +97,49 @@
       background
       layout="total,prev, pager, next"
       :current-page="pageNo"
-      :page-size="2"
-      :total="10"
-    >
+      :page-size="pageSize"
+      :total="total"
+      @current-change="getList"
+    align="right">
     </el-pagination>
+    </el-card>
   </div>
 </template>
 
 <script>
+import handoverApi from "@/api/customer/handoverHistory";
 export default {
   data() {
     return {
-      tableData: [
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-08",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-06",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-07",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-      ],
-      formInline: {
-        user: "",
-        region: "",
+      customerHandoverList: null,
+      customerHandoverQuery: {
+        name: "",
+        startTime: null,
+        endTime: null,
       },
+      //分页数据
+      total: 0,
+      pageNo: 1,
+      pageSize: 10,
+
       multipleSelection: [],
     };
   },
-
+  created() {
+    this.getList();
+  },
   methods: {
+    // 分页条件查询
+    getList(pageNo = 1) {
+      this.pageNo = pageNo;
+      handoverApi
+        .list(this.pageNo, this.pageSize, this.customerHandoverQuery)
+        .then((response) => {
+          this.customerHandoverList = response.data.customerHandoverDetailList;
+          this.total = response.data.total;
+        });
+    },
+
     toggleSelection(rows) {
       if (rows) {
         rows.forEach((row) => {
