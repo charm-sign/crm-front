@@ -119,40 +119,63 @@
       <!-- 模态窗口 -->
 
       <el-dialog :title="title" :visible.sync="dialogFormVisible" width="70%">
-        <el-form :model="employeeForm">
-          <el-form-item label="员工名称" :label-width="formLabelWidth">
+        <el-form :model="employeeForm" :rules="rules" ref="employeeForm">
+          <el-form-item
+            label="员工名称"
+            :label-width="formLabelWidth"
+            prop="name"
+          >
             <el-input v-model="employeeForm.name" autocomplete="off"></el-input>
           </el-form-item>
-          <el-form-item label="员工密码" :label-width="formLabelWidth">
+          <el-form-item
+            label="员工密码"
+            :label-width="formLabelWidth"
+            prop="password"
+          >
             <el-input
               type="password"
               v-model="employeeForm.password"
               autocomplete="off"
-              show-password
+              
             ></el-input>
           </el-form-item>
-          <el-form-item label="验证密码" :label-width="formLabelWidth">
+          <el-form-item
+            label="确认密码"
+            :label-width="formLabelWidth"
+            prop="checkPassword"
+          >
             <el-input
               type="password"
-              v-model="employeeForm.password"
+              v-model="employeeForm.checkPassword"
               autocomplete="off"
-              show-password
             ></el-input>
           </el-form-item>
-          <el-form-item label="员工年龄" :label-width="formLabelWidth">
+          <el-form-item
+            label="员工年龄"
+            :label-width="formLabelWidth"
+            prop="age"
+          >
             <el-input-number
               v-model="employeeForm.age"
               autocomplete="off"
               :min="0"
             ></el-input-number>
           </el-form-item>
-          <el-form-item label="员工email" :label-width="formLabelWidth">
+          <el-form-item
+            label="员工email"
+            :label-width="formLabelWidth"
+            prop="email"
+          >
             <el-input
               v-model="employeeForm.email"
               autocomplete="off"
             ></el-input>
           </el-form-item>
-          <el-form-item label="员工部门" :label-width="formLabelWidth">
+          <el-form-item
+            label="员工部门"
+            :label-width="formLabelWidth"
+            prop="dept"
+          >
             <el-select v-model="employeeForm.dept" placeholder="全部">
               <!-- 查询出来的 -->
               <el-option
@@ -191,8 +214,9 @@
           </div>
         </el-form>
         <div slot="footer" class="dialog-footer">
+          <!-- <el-button @click="resetForm('employeeForm')">重置</el-button> -->
           <el-button @click="dialogFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="saveOrUpdateRole()"
+          <el-button type="primary" @click="saveOrUpdateRole('employeeForm')"
             >提 交</el-button
           >
         </div>
@@ -203,23 +227,30 @@
         width="30%"
         :before-close="handleClose"
       >
-      <el-upload
+        <el-upload
           class="upload-demo"
-  ref="upload"
-  action="http://localhost:8080/sysService/employee/uploadExcel"
-  :on-preview="handlePreview"
-  :on-remove="handleRemove"
-  :file-list="fileList"
-  :auto-upload="false">
-  <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-  <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload()">上传到服务器</el-button>
-  <div slot="tip" class="el-upload__tip">只能上传xlsx文件</div>
-</el-upload>
+          ref="upload"
+          action="http://localhost:8080/sysService/employee/uploadExcel"
+          :on-preview="handlePreview"
+          :on-remove="handleRemove"
+          :file-list="fileList"
+          :auto-upload="false"
+        >
+          <el-button slot="trigger" size="small" type="primary"
+            >选取文件</el-button
+          >
+          <el-button
+            style="margin-left: 10px"
+            size="small"
+            type="success"
+            @click="submitUpload()"
+            >上传到服务器</el-button
+          >
+          <div slot="tip" class="el-upload__tip">只能上传xlsx文件</div>
+        </el-upload>
         <span slot="footer" class="dialog-footer">
           <el-button @click="dialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="importExcel()"
-            >确 定</el-button
-          >
+          <el-button type="primary" @click="importExcel()">确 定</el-button>
         </span>
       </el-dialog>
     </el-card>
@@ -233,12 +264,61 @@ import roleApi from "@/api/system/role";
 import qs from "qs";
 export default {
   data() {
+    var validatePass = (rule, value, callback) => {
+      const reg = /^.{6,50}$/;
+      if (value === "") {
+        callback(new Error("请输入密码"));
+      } else if (!reg.test(value)) {
+        callback(new Error("密码由6~15位字符组成"));
+      } else {
+        if (this.employeeForm.checkPassword !== "") {
+          this.$refs.employeeForm.validateField("checkPassword");
+        }
+        callback();
+      }
+    };
+    var validatePass2 = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请再次输入密码"));
+      } else if (value !== this.employeeForm.password) {
+        callback(new Error("两次输入密码不一致!"));
+      } else {
+        callback();
+      }
+    };
     return {
       // 分页查询数据
       employeeDetailList: null,
       pageNo: 1,
       pageSize: 10,
       total: 0,
+      rules: {
+        name: [{ required: true, message: "请输入员工名称", trigger: "blur" }],
+        password: [
+          {
+            required: true,
+            validator: validatePass,
+            trigger: "blur",
+          },
+        ],
+        checkPassword: [
+          {
+           required: true,
+            validator: validatePass2,
+            trigger: "blur",
+          },
+        ],
+        email: [
+          { required: true, message: "请输入邮箱地址" },
+          {
+            type: "email",
+            message: "请输入正确的邮箱地址",
+            trigger: ["blur", "change"],
+          },
+        ],
+        age: [{ required: true, message: "请输入员工年龄" }],
+        dept: [{ required: true, message: "请选择员工部门" }],
+      },
       employeeQuery: {}, //查询参数
       radio: "1",
       deptList: null, //部门列表
@@ -259,28 +339,34 @@ export default {
       title: "",
       dialogTableVisible: false,
       dialogFormVisible: false,
+
       employeeForm: {
         name: "",
         password: "",
+        checkPassword: "",
         email: "",
         age: "",
         dept: "",
         departmentName: "",
       },
-dialogVisible: false,
-fileList:[],
-formData: null, //上传模板数据
+
+      dialogVisible: false,
+      fileList: [],
+      formData: null, //上传模板数据
 
       formLabelWidth: "120px",
       currentRow: null,
     };
   },
   created() {
-    this.getList();
-    this.getDeptList();
-    this.getRoleList();
+    this.init();
   },
   methods: {
+    init() {
+      this.getList();
+      this.getDeptList();
+      this.getRoleList();
+    },
     // 分页条件查询
     getList(pageNo = 1) {
       this.pageNo = pageNo;
@@ -337,32 +423,44 @@ formData: null, //上传模板数据
       this.employeeForm = {};
       (this.roleIds = []), (this.title = "新增");
       this.dialogFormVisible = true;
+      if (this.$refs.employeeForm) {
+        this.$refs.employeeForm.resetFields();
+      }
     },
     //添加员工
-    saveEmployee() {
+    saveEmployee(employeeForm) {
       this.roleIds = qs.stringify({ ids: this.roleIds }, { indices: false });
-      employeeApi
-        .add(this.employeeForm, this.roleIds)
-        // console.log(this.permissionIds)
-        .then((response) => {
-          return this.$message({
-            type: "success",
-            message: "添加成功!",
-          });
-        })
-        .then((response) => {
-          (this.dialogFormVisible = false), this.getList(); //刷新列表
-        })
-        .catch((response) => {
-          this.$message({
-            type: "error",
-            message: "保存失败",
-          });
-        });
+      this.$refs[employeeForm].validate((valid) => {
+        if (valid) {
+          employeeApi
+            .add(this.employeeForm, this.roleIds)
+            // console.log(this.permissionIds)
+            .then((response) => {
+              return this.$message({
+                type: "success",
+                message: "添加成功!",
+              });
+            })
+            .then((response) => {
+              (this.dialogFormVisible = false), this.getList(); //刷新列表
+            })
+            .catch((response) => {
+              this.$message({
+                type: "error",
+                message: "保存失败",
+              });
+            });
+        } else {
+          return false;
+        }
+      });
     },
     //修改
     //根据id查询角色信息
     getInfo(id) {
+      if (this.$refs.employeeForm) {
+        this.$refs.employeeForm.resetFields();
+      }
       employeeApi.getInfoById(id).then((response) => {
         this.employeeForm = response.data.employee;
         //该角色的权限 (需要的是 ids ['1,'2','3'],但返回的是[{id,name},{id,name},{id,name}])
@@ -375,35 +473,43 @@ formData: null, //上传模板数据
         this.title = "编辑";
         this.dialogFormVisible = true;
       });
+        
+
     },
     //修改角色信息
-    updateEmployee() {
+    updateEmployee(employeeForm) {
       this.roleIds = qs.stringify({ ids: this.roleIds }, { indices: false });
-      employeeApi
-        .update(this.employeeForm, this.roleIds)
-        .then((response) => {
-          this.getList();
-          this.dialogFormVisible = false;
-        })
-        .then((response) => {
-          return this.$message({
-            type: "success",
-            message: "修改成功!",
-          });
-        })
-        .catch((response) => {
-          this.$message({
-            type: "error",
-            message: "修改失败",
-          });
-        });
+      this.$refs[employeeForm].validate((valid) => {
+        if (valid) {
+          employeeApi
+            .update(this.employeeForm, this.roleIds)
+            .then((response) => {
+              this.getList();
+              this.dialogFormVisible = false;
+            })
+            .then((response) => {
+              return this.$message({
+                type: "success",
+                message: "修改成功!",
+              });
+            })
+            .catch((response) => {
+              this.$message({
+                type: "error",
+                message: "修改失败",
+              });
+            });
+        } else {
+          return false;
+        }
+      });
     },
     //判断是新建还是修改
-    saveOrUpdateRole() {
+    saveOrUpdateRole(employeeForm) {
       if (!this.employeeForm.id) {
-        this.saveEmployee();
+        this.saveEmployee("employeeForm");
       } else {
-        this.updateEmployee();
+        this.updateEmployee("employeeForm");
       }
     },
     //1.批量选择
@@ -454,7 +560,7 @@ formData: null, //上传模板数据
     },
     //导出数据
     onExport() {
-       // 遍历数组，取出其中所有id并组成新数组
+      // 遍历数组，取出其中所有id并组成新数组
       this.multipleSelection = this.multipleSelection.map((x) => {
         return x.id;
       });
@@ -465,34 +571,40 @@ formData: null, //上传模板数据
         { indices: false }
       );
       // console.log(this.multipleSelection);
-         window.location.href='http://localhost:8080/sysService/employee/exportExcel?'+this.multipleSelection
-      this.getList()
+      window.location.href =
+        "http://localhost:8080/sysService/employee/exportExcel?" +
+        this.multipleSelection;
+      this.getList();
       // employeeApi.exportExcel(this.multipleSelection).then(response => { })  //异步方式响应回来的是文件流，不便操作
-        
     },
-    onTemplate() { 
-      window.location.href='http://localhost:8080/sysService/employee/downExcel'
+    onTemplate() {
+      window.location.href =
+        "http://localhost:8080/sysService/employee/downExcel";
     },
     //点击导入，清空文件列表
     importWin() {
-      this.fileList=[]
-      this.dialogVisible = true
+      this.fileList = [];
+      this.dialogVisible = true;
     },
     submitUpload() {
       // 还是请求的action
-        this.$refs.upload.submit();
-      },
-    //导入文件提交
-    importExcel(){
-       this.dialogVisible = false
-                this.getList();
+      this.$refs.upload.submit();
     },
-     handleExceed(files, fileList) {
-        this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
-      },
-      beforeRemove(file, fileList) {
-        return this.$confirm(`确定移除 ${ file.name }？`);
-      }
+    //导入文件提交
+    importExcel() {
+      this.dialogVisible = false;
+      this.getList();
+    },
+    handleExceed(files, fileList) {
+      this.$message.warning(
+        `当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${
+          files.length + fileList.length
+        } 个文件`
+      );
+    },
+    beforeRemove(file, fileList) {
+      return this.$confirm(`确定移除 ${file.name}？`);
+    },
   },
 };
 </script>

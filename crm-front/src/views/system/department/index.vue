@@ -63,8 +63,8 @@
     <!-- 模态窗口 -->
 
     <el-dialog :title="title" :visible.sync="dialogFormVisible" width="40%">
-      <el-form :model="departmentForm">
-        <el-form-item label="部门名称" :label-width="formLabelWidth">
+      <el-form :model="departmentForm" :rules="rules" ref="departmentForm">
+        <el-form-item label="部门名称" :label-width="formLabelWidth" prop="name">
           <el-input v-model="departmentForm.name" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="部门编号" :label-width="formLabelWidth">
@@ -73,7 +73,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel()">取 消</el-button>
-        <el-button type="primary" @click="saveOrUpdateDepartment"
+        <el-button type="primary" @click="saveOrUpdateDepartment('departmentForm')"
           >提 交</el-button
         >
       </div>
@@ -87,6 +87,12 @@ import departApi from "@/api/system/department";
 export default {
   data() {
     return {
+      rules: {
+        name: [
+          { required: true, message: '请输入部门名称', trigger: 'blur' },
+          // { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+        ],
+      },
       title:'',
       // 分页查询数据
       departmentList: null,
@@ -118,13 +124,15 @@ export default {
     },
     saveOrUpdateDepartment() {
       if (!this.departmentForm.id) {
-        this.saveDepartment();
+        this.saveDepartment('departmentForm');
       } else {
-        this.updateDepartment();
+        this.updateDepartment('departmentForm');
       }
     },
     //根据id查询部门信息
     getInfo(id) {
+      if (this.$refs.departmentForm){
+this.$refs.departmentForm.resetFields();}  
       departApi.getInfoById(id).then((response) => {
         this.departmentForm = response.data.department;
         this.title='编辑'
@@ -132,8 +140,10 @@ export default {
       });
     },
     //修改部门信息
-    updateDepartment() {
-      departApi
+    updateDepartment(departmentForm) {
+       this.$refs[departmentForm].validate((valid) => {
+          if (valid) {
+             departApi
         .update(this.departmentForm)
         .then((response) => {
           this.getList();
@@ -151,11 +161,19 @@ export default {
             message: "修改失败",
           });
         });
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+     
     },
     //新建部门
-    saveDepartment() {
+    saveDepartment(departmentForm) {
       this.dialogFormVisible = true;
-      departApi
+       this.$refs[departmentForm].validate((valid) => {
+          if (valid) {
+            departApi
         .add(this.departmentForm)
         .then((response) => {
           return this.$message({
@@ -172,6 +190,12 @@ export default {
             message: "保存失败",
           });
         });
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+     
     },
     //取消操作
     cancel() {
@@ -208,6 +232,8 @@ export default {
     },
     //点击新建，先清空表单
     resetData() {
+      if (this.$refs.departmentForm){
+this.$refs.departmentForm.resetFields();}  
       this.departmentForm = {};
       this.title='新增'
       this.dialogFormVisible = true;

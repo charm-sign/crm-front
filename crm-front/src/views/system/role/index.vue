@@ -58,8 +58,8 @@
       <!-- 模态窗口 -->
 
       <el-dialog :title="title" :visible.sync="dialogFormVisible" width="70%">
-        <el-form :model="roleForm">
-          <el-form-item label="角色名称" :label-width="formLabelWidth">
+        <el-form :model="roleForm" :rules="rules" ref="roleForm">
+          <el-form-item label="角色名称" :label-width="formLabelWidth" prop="name" >
             <el-input v-model="roleForm.name" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="角色编号" :label-width="formLabelWidth">
@@ -89,9 +89,10 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="cancel()">取 消</el-button>
-          <el-button type="primary" @click="saveOrUpdateRole()"
+          <el-button type="primary" @click="saveOrUpdateRole('roleForm')"
             >提 交</el-button
           >
+          
         </div>
       </el-dialog>
     </el-card>
@@ -105,6 +106,12 @@ import roleApi from "@/api/system/role";
 export default {
   data() {
     return {
+      rules: {
+        name: [
+          { required: true, message: '请输入角色名称', trigger: 'blur' },
+          // { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+        ],
+      },
       title: "",
       // 分页查询数据
       roleList: null,
@@ -163,17 +170,22 @@ export default {
 
     //点击添加，先清空表单
     resetData() {
+      if (this.$refs.roleForm){
+this.$refs.roleForm.resetFields();}  
       this.roleForm = {};
       (this.permissionIds = []), (this.title = "新增");
       this.dialogFormVisible = true;
     },
     //添加角色
-    saveRole() {
+    saveRole(roleForm) {
       this.permissionIds = qs.stringify(
         { ids: this.permissionIds },
         { indices: false }
       );
-      roleApi
+      this.$refs[roleForm].validate((valid) => {
+          if (valid) {
+          
+            roleApi
         .add(this.roleForm, this.permissionIds)
         // console.log(this.permissionIds)
         .then((response) => {
@@ -191,11 +203,22 @@ export default {
             message: "保存失败",
           });
         });
+         
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+           
+      
     },
 
     //修改
     //根据id查询角色信息
     getInfo(id) {
+      if (this.$refs.roleForm) {
+        this.$refs.roleForm.resetFields();
+      }
       roleApi.getInfoById(id).then((response) => {
         this.roleForm = response.data.role;
         //该角色的权限 (需要的是 ids ['1,'2','3'],但返回的是[{id,name},{id,name},{id,name}])
@@ -210,12 +233,14 @@ export default {
       });
     },
     //修改角色信息
-    updateRole() {
+    updateRole(roleForm) {
       this.permissionIds = qs.stringify(
         { ids: this.permissionIds },
         { indices: false }
       );
-      roleApi
+      this.$refs[roleForm].validate((valid) => {
+          if (valid) {
+            roleApi
         .update(this.roleForm, this.permissionIds)
         .then((response) => {
           this.getList();
@@ -233,6 +258,12 @@ export default {
             message: "修改失败",
           });
         });
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      
     },
 
     //删除方法
@@ -261,11 +292,11 @@ export default {
         });
     },
     //判断是新建还是修改
-    saveOrUpdateRole() {
+    saveOrUpdateRole(roleForm) {
       if (!this.roleForm.id) {
-        this.saveRole();
+        this.saveRole(roleForm);
       } else {
-        this.updateRole();
+        this.updateRole(roleForm);
       }
     },
     setCurrent(row) {

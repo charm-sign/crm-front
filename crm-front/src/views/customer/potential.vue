@@ -150,18 +150,22 @@
       <!-- 模态窗口 -->
       <!-- 新增，编辑 -->
       <el-dialog :title="title" :visible.sync="dialogFormVisible" width="30%">
-        <el-form :model="customerForm">
-          <el-form-item label="姓名" :label-width="formLabelWidth">
+        <el-form :model="customerForm" :rules="rules" ref="customerForm">
+          <el-form-item label="姓名" :label-width="formLabelWidth" prop="name">
             <el-input v-model="customerForm.name" autocomplete="off"></el-input>
           </el-form-item>
-          <el-form-item label="年龄" :label-width="formLabelWidth">
+          <el-form-item label="年龄" :label-width="formLabelWidth" prop="age">
             <el-input-number
               v-model="customerForm.age"
               autocomplete="off"
               :min="0"
             ></el-input-number>
           </el-form-item>
-          <el-form-item label="性别" :label-width="formLabelWidth">
+          <el-form-item
+            label="性别"
+            :label-width="formLabelWidth"
+            prop="gender"
+          >
             <el-select v-model="customerForm.gender" placeholder="">
               <el-option
                 v-for="gender in genderList"
@@ -171,13 +175,13 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="电话" :label-width="formLabelWidth">
+          <el-form-item label="电话" :label-width="formLabelWidth" prop="tel">
             <el-input v-model="customerForm.tel" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="QQ" :label-width="formLabelWidth">
             <el-input v-model="customerForm.qq" autocomplete="off"></el-input>
           </el-form-item>
-          <el-form-item label="职业" :label-width="formLabelWidth">
+          <el-form-item label="职业" :label-width="formLabelWidth" prop="job">
             <el-select v-model="customerForm.job" placeholder="">
               <el-option
                 v-for="job in jobList"
@@ -187,7 +191,11 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="来源" :label-width="formLabelWidth">
+          <el-form-item
+            label="来源"
+            :label-width="formLabelWidth"
+            prop="source"
+          >
             <el-select v-model="customerForm.source" placeholder="">
               <el-option
                 v-for="source in sourceList"
@@ -200,7 +208,9 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="saveOrUpdateCustomer()"
+          <el-button
+            type="primary"
+            @click="saveOrUpdateCustomer('customerForm')"
             >提 交</el-button
           >
         </div>
@@ -234,8 +244,16 @@
       </el-dialog>
       <!-- 跟进记录 -->
       <el-dialog title="跟进记录" :visible.sync="dialogFollow" width="30%">
-        <el-form :model="customerForm">
-          <el-form-item label="客户姓名" :label-width="formLabelWidth">
+        <el-form
+          :model="followUpForm"
+          :rules="followUpRules"
+          ref="followUpForm"
+        >
+          <el-form-item
+            label="客户姓名"
+            :label-width="formLabelWidth"
+            prop="customerId"
+          >
             <el-input
               v-model="customerForm.name"
               autocomplete="off"
@@ -243,7 +261,11 @@
               :disabled="true"
             ></el-input>
           </el-form-item>
-          <el-form-item label="跟进时间" :label-width="formLabelWidth">
+          <el-form-item
+            label="跟进时间"
+            :label-width="formLabelWidth"
+            prop="traceTime"
+          >
             <el-date-picker
               v-model="followUpForm.traceTime"
               type="datetime"
@@ -252,14 +274,22 @@
             >
             </el-date-picker>
           </el-form-item>
-          <el-form-item label="跟进内容" :label-width="formLabelWidth">
+          <el-form-item
+            label="跟进内容"
+            :label-width="formLabelWidth"
+            prop="traceDetails"
+          >
             <el-input
-            type="textarea"
+              type="textarea"
               v-model="followUpForm.traceDetails"
               autocomplete="off"
             ></el-input>
           </el-form-item>
-          <el-form-item label="跟进方式" :label-width="formLabelWidth">
+          <el-form-item
+            label="跟进方式"
+            :label-width="formLabelWidth"
+            prop="traceType"
+          >
             <el-select v-model="followUpForm.traceType" placeholder="">
               <el-option
                 v-for="method in traceMethod"
@@ -269,7 +299,11 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="跟进效果" :label-width="formLabelWidth">
+          <el-form-item
+            label="跟进效果"
+            :label-width="formLabelWidth"
+            prop="traceResult"
+          >
             <el-select v-model="followUpForm.traceResult" placeholder="">
               <el-option
                 v-for="trace in traceResult"
@@ -279,15 +313,19 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="备注" :label-width="formLabelWidth">
+          <el-form-item label="备  注" :label-width="formLabelWidth">
             <el-input
-            type="textarea"
+              type="textarea"
               v-model="followUpForm.comment"
               autocomplete="off"
             ></el-input>
           </el-form-item>
 
-          <el-form-item label="跟进类型" :label-width="formLabelWidth">
+          <el-form-item
+            label="跟进类型"
+            :label-width="formLabelWidth"
+            prop="type"
+          >
             <el-select v-model="followUpForm.type" placeholder="">
               <el-option
                 v-for="type in typeList"
@@ -300,13 +338,19 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFollow = false">取 消</el-button>
-          <el-button type="primary" @click="saveFollowUp()">提 交</el-button>
+          <el-button type="primary" @click="saveFollowUp('followUpForm')"
+            >提 交</el-button
+          >
         </div>
       </el-dialog>
-<!-- 移交记录 -->
-      
+      <!-- 移交记录 -->
+
       <el-dialog title="移交" :visible.sync="dialogHandover" width="30%">
-        <el-form :model="customerForm">
+        <el-form
+          :model="handoverForm"
+          :rules="handoverRules"
+          ref="handoverForm"
+        >
           <el-form-item label="客户姓名" :label-width="formLabelWidth">
             <el-input
               v-model="customerForm.name"
@@ -315,8 +359,12 @@
               :disabled="true"
             ></el-input>
           </el-form-item>
-          <el-form-item label="旧营销人员" :label-width="formLabelWidth" >
-            <el-select v-model="handoverForm.oldSeller" placeholder="" :disabled="true">
+          <el-form-item label="旧营销人员" :label-width="formLabelWidth">
+            <el-select
+              v-model="handoverForm.oldSeller"
+              placeholder=""
+              :disabled="true"
+            >
               <el-option
                 v-for="employee in emploeeList"
                 :label="employee.name"
@@ -325,7 +373,11 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="新营销人员" :label-width="formLabelWidth">
+          <el-form-item
+            label="新营销人员"
+            :label-width="formLabelWidth"
+            prop="newSeller"
+          >
             <el-select v-model="handoverForm.newSeller" placeholder="">
               <el-option
                 v-for="employee in emploeeList"
@@ -335,9 +387,13 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="移交原因" :label-width="formLabelWidth">
+          <el-form-item
+            label="移交原因"
+            :label-width="formLabelWidth"
+            prop="transReason"
+          >
             <el-input
-            type="textarea"
+              type="textarea"
               v-model="handoverForm.transReason"
               autocomplete="off"
             ></el-input>
@@ -345,7 +401,9 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogHandover = false">取 消</el-button>
-          <el-button type="primary" @click="saveHandover()">提 交</el-button>
+          <el-button type="primary" @click="saveHandover('handoverForm')"
+            >提 交</el-button
+          >
         </div>
       </el-dialog>
     </el-card>
@@ -356,10 +414,22 @@
 import dictApi from "@/api/system/dictionary";
 import custApi from "@/api/customer/customer";
 import followUpApi from "@/api/customer/followHistory";
-import employeeApi from "@/api/system/employee"
-import handoverApi from "@/api/customer/handoverHistory"
+import employeeApi from "@/api/system/employee";
+import handoverApi from "@/api/customer/handoverHistory";
 export default {
   data() {
+    var checkphone = (rule, value, callback) => {
+      // let phoneReg = /(^1[3|4|5|6|7|8|9]\d{9}$)|(^09\d{8}$)/;
+      if (value == "") {
+        callback(new Error("请输入手机号"));
+      } else if (!this.isCellPhone(value)) {
+        // 引入methods中封装的检查手机格式的方法
+        callback(new Error("请输入正确的手机号!"));
+      } else {
+        callback();
+      }
+    };
+
     return {
       //状态下拉框列表
       statusList: null,
@@ -383,6 +453,42 @@ export default {
       dialogFollow: false,
       dialogHandover: false,
       title: "",
+      rules: {
+        name: [{ required: true, message: "请输入客户名称", trigger: "blur" }],
+        age: [{ required: true, message: "请输入客户年龄" }],
+        gender: [{ required: true, message: "请选择客户性别" }],
+        tel: [{ required: true, validator: checkphone, trigger: "blur" }],
+        job: [{ required: true, message: "请选择客户职业" }],
+        source: [{ required: true, message: "请选择客户来源" }],
+      },
+      // 跟进表单验证
+      followUpRules: {
+        
+        customerId: [{}],
+        traceTime: [
+          {
+           
+            required: true,
+            message: "请选择跟进时间",
+            trigger: "change",
+          },
+        ],
+        traceDetails: [{ required: true, message: "请填写跟进内容" }],
+        traceType: [
+          { required: true, message: "请选择跟进方式", trigger: "change" },
+        ],
+        traceResult: [{ required: true, message: "请选择跟进效果" }],
+        type: [{ required: true, message: "请选择跟进类型" }],
+      },
+      //移交表单验证
+      handoverRules: {
+        transReason: [
+          { required: true, message: "请填写移交原因", trigger: "blur" },
+        ],
+        newSeller: [
+          { required: true, message: "请选择新营销人员", trigger: "change" },
+        ],
+      },
       //新增及修改表单
       customerForm: {
         name: "",
@@ -403,7 +509,7 @@ export default {
       traceResult: [],
       traceMethod: [],
       typeList: [],
-      emploeeList:[],
+      emploeeList: [],
       //跟进表单
       followUpForm: {
         customerId: "",
@@ -416,7 +522,7 @@ export default {
         type: null,
       },
       handoverForm: {
-        id:"",
+        id: "",
         customerId: "",
         oldSeller: "",
         newSeller: "",
@@ -425,19 +531,28 @@ export default {
     };
   },
   created() {
-   this.init()
+    this.init();
   },
   methods: {
-    init() { 
- this.getList();
-    this.getAllDict();
-    this.getEmployee();
+    //手机号校验
+    isCellPhone(val) {
+      if (!/^1(3|4|5|6|7|8)\d{9}$/.test(val)) {
+        return false;
+      } else {
+        return true;
+      }
+    },
+
+    init() {
+      this.getList();
+      this.getAllDict();
+      this.getEmployee();
     },
     //查询所有员工
-    getEmployee() { 
-      employeeApi.getEmployee().then(response => { 
-        this.emploeeList= response.data.employeeList
-      })
+    getEmployee() {
+      employeeApi.getEmployee().then((response) => {
+        this.emploeeList = response.data.employeeList;
+      });
     },
     // 分页条件查询
     getList(pageNo = 1) {
@@ -482,32 +597,42 @@ export default {
     },
     //点击新建，先清空表单
     resetData() {
+      if (this.$refs.customerForm){
+this.$refs.customerForm.resetFields();} 
       this.customerForm = {};
       this.title = "新增";
       this.dialogFormVisible = true;
     },
     //添加客户
-    saveCustomer() {
-      custApi
-        .add(this.customerForm)
-        .then((response) => {
-          return this.$message({
-            type: "success",
-            message: "添加成功!",
-          });
-        })
-        .then((response) => {
-          (this.dialogFormVisible = false), this.getList(); //刷新列表
-        })
-        .catch((response) => {
-          this.$message({
-            type: "error",
-            message: "添加失败",
-          });
-        });
+    saveCustomer(customerForm) {
+      this.$refs[customerForm].validate((valid) => {
+        if (valid) {
+          custApi
+            .add(this.customerForm)
+            .then((response) => {
+              return this.$message({
+                type: "success",
+                message: "添加成功!",
+              });
+            })
+            .then((response) => {
+              (this.dialogFormVisible = false), this.getList(); //刷新列表
+            })
+            .catch((response) => {
+              this.$message({
+                type: "error",
+                message: "添加失败",
+              });
+            });
+        } else {
+          return false;
+        }
+      });
     },
     //根据id查询客户信息
     getInfo(id) {
+       if (this.$refs.customerForm){
+this.$refs.customerForm.resetFields();} 
       custApi.getInfoById(id).then((response) => {
         this.customerForm = response.data.customer;
         this.title = "编辑";
@@ -515,33 +640,39 @@ export default {
       });
     },
     //修改客户信息
-    updateCustomer() {
-      custApi
-        .update(this.customerForm)
-        .then((response) => {
-          this.getList();
-          this.dialogFormVisible = false;
-          this.dialogUpdateStatus = false;
-        })
-        .then((response) => {
-          return this.$message({
-            type: "success",
-            message: "修改成功!",
-          });
-        })
-        .catch((response) => {
-          this.$message({
-            type: "error",
-            message: "修改失败",
-          });
-        });
+    updateCustomer(customerForm) {
+      this.$refs[customerForm].validate((valid) => {
+        if (valid) {
+          custApi
+            .update(this.customerForm)
+            .then((response) => {
+              this.getList();
+              this.dialogFormVisible = false;
+              this.dialogUpdateStatus = false;
+            })
+            .then((response) => {
+              return this.$message({
+                type: "success",
+                message: "修改成功!",
+              });
+            })
+            .catch((response) => {
+              this.$message({
+                type: "error",
+                message: "修改失败",
+              });
+            });
+        } else {
+          return false;
+        }
+      });
     },
     //判断是新建还是修改
     saveOrUpdateCustomer() {
       if (!this.customerForm.id) {
-        this.saveCustomer();
+        this.saveCustomer("customerForm");
       } else {
-        this.updateCustomer();
+        this.updateCustomer("customerForm");
       }
     },
     //修改状态
@@ -553,6 +684,8 @@ export default {
     },
     //点击跟进
     getInfo2(id) {
+       if (this.$refs.followUpForm){
+this.$refs.followUpForm.resetFields();} 
       this.followUpForm = {};
       custApi.getInfoById(id).then((response) => {
         this.customerForm = response.data.customer;
@@ -561,53 +694,69 @@ export default {
       });
     },
     //保存跟进历史
-    saveFollowUp() {
-      followUpApi
-        .add(this.followUpForm)
-        .then((response) => {
-          return this.$message({
-            type: "success",
-            message: "添加成功!",
-          });
-        })
-        .then((response) => {
-          (this.dialogFollow = false), this.getList(); //刷新列表
-        })
-        .catch((response) => {
-          this.$message({
-            type: "error",
-            message: "添加失败",
-          });
-        });
+    saveFollowUp(followUpForm) {
+      this.$refs[followUpForm].validate((valid) => {
+        if (valid) {
+          followUpApi
+            .add(this.followUpForm)
+            .then((response) => {
+              return this.$message({
+                type: "success",
+                message: "添加成功!",
+              });
+            })
+            .then((response) => {
+              (this.dialogFollow = false), this.getList(); //刷新列表
+            })
+            .catch((response) => {
+              this.$message({
+                type: "error",
+                message: "添加失败",
+              });
+            });
+        } else {
+          return false;
+        }
+      });
     },
     //点击移交
     getInfo3(id) {
+       if (this.$refs.handoverForm){
+this.$refs.handoverForm.resetFields();} 
       this.handoverForm = {};
       custApi.getInfoById(id).then((response) => {
-          this.customerForm = response.data.customer;
-        this.handoverForm.oldSeller = this.customerForm.seller
+        this.customerForm = response.data.customer;
+        this.handoverForm.oldSeller = this.customerForm.seller;
         this.handoverForm.customerId = this.customerForm.id;
-         this.handoverForm.customerId = this.customerForm.id;
-          this.dialogHandover = true;
+        this.handoverForm.customerId = this.customerForm.id;
+        this.dialogHandover = true;
       });
     },
     //移交
-    saveHandover() { 
-      handoverApi.add(this.handoverForm).then(response => {
-          return this.$message({
-            type: "success",
-            message: "移交成功!",
-          });
-        })
-        .then((response) => {
-          (this.dialogHandover = false), this.getList(); //刷新列表
-        })
-        .catch((response) => {
-          this.$message({
-            type: "error",
-            message: "移交失败",
-          });
-        });
+    saveHandover(handoverForm) {
+      this.$refs[handoverForm].validate((valid) => {
+        if (valid) {
+          handoverApi
+            .add(this.handoverForm)
+            .then((response) => {
+              return this.$message({
+                type: "success",
+                message: "移交成功!",
+              });
+            })
+            .then((response) => {
+              (this.dialogHandover = false), this.getList(); //刷新列表
+            })
+            .catch((response) => {
+              this.$message({
+                type: "error",
+                message: "移交失败",
+              });
+            });
+        } else {
+          return false;
+        }
+      });
     },
     toggleSelection(rows) {
       if (rows) {

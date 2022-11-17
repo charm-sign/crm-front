@@ -13,8 +13,9 @@ export function isExternal(path) {
 /**
  * @param {string} str
  * @returns {Boolean}
+ * 定义了可以登录的用户名
  */
 export function validUsername(str) {
-  const valid_map = ['admin', 'editor']
+  const valid_map = ['admin', 'editor']  
   return valid_map.indexOf(str.trim()) >= 0
 }

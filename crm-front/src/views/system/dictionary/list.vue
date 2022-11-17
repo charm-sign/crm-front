@@ -60,14 +60,14 @@
     <!-- 模态窗口 -->
 
     <el-dialog :title="title" :visible.sync="dialogFormVisible" width="40%">
-      <el-form :model="dictionaryForm">
-        <el-form-item label="数据字典名称" :label-width="formLabelWidth">
+      <el-form :model="dictionaryForm" :rules="rules" ref="dictionaryForm">
+        <el-form-item label="数据字典名称" :label-width="formLabelWidth" prop="name">
           <el-input v-model="dictionaryForm.name" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="数据字典编号" :label-width="formLabelWidth">
           <el-input v-model="dictionaryForm.sn" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="数据字典简介" :label-width="formLabelWidth">
+        <el-form-item label="数据字典简介" :label-width="formLabelWidth"  prop="intro">
           <el-input
             v-model="dictionaryForm.intro"
             autocomplete="off"
@@ -76,7 +76,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel()">取 消</el-button>
-        <el-button type="primary" @click="saveOrUpdateDictionary()"
+        <el-button type="primary" @click="saveOrUpdateDictionary('dictionaryForm')"
           >提 交</el-button
         >
       </div>
@@ -89,6 +89,14 @@ import dictApi from "@/api/system/dictionary";
 export default {
   data() {
     return {
+      rules: {
+        name: [
+          { required: true, message: '请输入字典名称', trigger: 'blur' },
+        ],
+        intro: [
+          { required: true, message: '请输入字典简介', trigger: 'blur' },
+        ],
+      },
       dictList: null,
       pageNo: 1,
       pageSize: 10,
@@ -135,12 +143,16 @@ export default {
 
     //点击添加，先清空表单
     resetData() {
+      if (this.$refs.dictionaryForm){
+this.$refs.dictionaryForm.resetFields();}  
       this.dictionaryForm = {};
       this.title = "新增";
       this.dialogFormVisible = true;
     },
     //点击编辑，根据id查询部门信息
     getInfo(id) {
+      if (this.$refs.dictionaryForm){
+this.$refs.dictionaryForm.resetFields();}  
       dictApi.getInfo(id).then((response) => {
         this.dictionaryForm = response.data.dictionary;
         this.title = "编辑";
@@ -148,8 +160,10 @@ export default {
       });
     },
     //添加字典
-    save() {
-      dictApi
+    save(dictionaryForm) {
+      this.$refs[dictionaryForm].validate((valid) => {
+          if (valid) {
+             dictApi
         .add(this.dictionaryForm)
         .then((response) => {
           return this.$message({
@@ -166,10 +180,18 @@ export default {
             message: "保存失败",
           });
         });
+          } else {
+           
+            return false;
+          }
+        });
+     
     },
     //修改字典信息
-    edit() {
-      dictApi
+    edit(dictionaryForm) {
+      this.$refs[dictionaryForm].validate((valid) => {
+          if (valid) {
+           dictApi
         .update(this.dictionaryForm)
         .then((response) => {
           this.getList();
@@ -187,13 +209,19 @@ export default {
             message: "修改失败",
           });
         });
+          } else {
+            
+            return false;
+          }
+        });
+      
     },
     //提交判断
     saveOrUpdateDictionary() {
       if (!this.dictionaryForm.id) {
-        this.save();
+        this.save('dictionaryForm');
       } else {
-        this.edit();
+        this.edit('dictionaryForm');
       }
     },
   },

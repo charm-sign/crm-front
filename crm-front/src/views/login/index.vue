@@ -59,8 +59,8 @@ export default {
   name: 'Login',
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('请输入正确的用户名'))
+      if (!value) {
+        callback(new Error('请输入用户名'))
       } else {
         callback()
       }
@@ -130,8 +130,8 @@ export default {
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
 
 $bg:#283443;
-$light_gray:#fff;
-$cursor: #fff;
+$light_gray:rgb(62, 58, 58);
+$cursor: rgb(87, 81, 81);
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
   .login-container .el-input input {
@@ -141,6 +141,13 @@ $cursor: #fff;
 
 /* reset element-ui css */
 .login-container {
+    width: 100%;
+  height: 100%;
+  background-image: url("../../assets/login_images/login_bg4.png");
+  background-size: cover;
+  background-position: center;
+  position: relative;
+
   .el-input {
     display: inline-block;
     height: 47px;
@@ -175,7 +182,7 @@ $cursor: #fff;
 <style lang="scss" scoped>
 $bg:#336393;
 $dark_gray:#889aa4;
-$light_gray:#eee;
+$light_gray:rgb(251, 249, 249);
 
 .login-container {
   min-height: 100%;
@@ -194,7 +201,7 @@ $light_gray:#eee;
 
   .tips {
     font-size: 14px;
-    color: #fff;
+    color: rgb(53, 50, 50);
     margin-bottom: 10px;
 
     span {

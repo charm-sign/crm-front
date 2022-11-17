@@ -76,18 +76,18 @@
        <!-- 模态窗口 -->
 
     <el-dialog :title="title" :visible.sync="dialogFormVisible" width="40%">
-      <el-form :model="detailForm">
-        <el-form-item label="字典明细名称" :label-width="formLabelWidth">
+      <el-form :model="detailForm" :rules="rules" ref="detailForm">
+        <el-form-item label="字典明细名称" :label-width="formLabelWidth" prop="title">
           <el-input v-model="detailForm.title" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="字典明细序列" :label-width="formLabelWidth">
-          <el-input-number v-model="detailForm.sequence" autocomplete="off"></el-input-number>
+        <el-form-item label="字典明细序列" :label-width="formLabelWidth" prop="sequence">
+          <el-input-number v-model.number="detailForm.sequence" autocomplete="off"></el-input-number>
         </el-form-item>
         
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel()">取 消</el-button>
-        <el-button type="primary" @click="saveOrUpdateDetail()"
+        <el-button type="primary" @click="saveOrUpdateDetail('detailForm')"
           >提 交</el-button
         >
       </div>
@@ -100,6 +100,15 @@ import dictApi from "@/api/system/dictionary";
 export default {
   data() {
     return {
+       rules: {
+        title: [
+          { required: true, message: '请输入字典明细名称', trigger: 'blur' },
+        ],
+        sequence: [
+          { required: true, message: '请输入字典明细序列' },
+          {type:'number',message:'序列必须为数字值'}
+        ],
+      },
       //明细列表
       dictionaryDetailList: [],
       dictQuery: {},
@@ -128,6 +137,8 @@ export default {
     },
     //点击添加，先清空表单
     resetData(id) {
+      if (this.$refs.detailForm){
+this.$refs.detailForm.resetFields();}  
       this.detailForm = {};
       this.parentId=id
       this.title = "新增";
@@ -144,14 +155,16 @@ export default {
     //提交判断
     saveOrUpdateDetail() {
       if (!this.detailForm.id) {
-        this.save();
+        this.save('detailForm');
       } else {
-        this.edit();
+        this.edit('detailForm');
       }
     },
     //添加字典     
-    save() {
-      dictApi
+    save(detailForm) {
+      this.$refs[detailForm].validate((valid) => {
+          if (valid) {
+           dictApi
         .addDetail(this.parentId,this.detailForm)
         .then((response) => {
           return this.$message({
@@ -168,9 +181,17 @@ export default {
             message: "保存失败",
           });
         });
+          } else {
+           
+            return false;
+          }
+        });
+     
     },
     //点击编辑，根据id查询明细信息
     getInfo(id) {
+      if (this.$refs.detailForm){
+this.$refs.detailForm.resetFields();} 
       dictApi.getInfoById(id).then((response) => {
         this.detailForm = response.data.dictionaryDetails;
         this.title = "编辑";
@@ -178,8 +199,10 @@ export default {
       });
     },
     //修改字典信息
-    edit() {
-      dictApi
+    edit(detailForm) {
+      this.$refs[detailForm].validate((valid) => {
+          if (valid) {
+           dictApi
         .updateDetail(this.detailForm)
         .then((response) => {
           this.getList();
@@ -197,6 +220,12 @@ export default {
             message: "修改失败",
           });
         });
+          } else {
+            
+            return false;
+          }
+        });
+     
     },
   },
 };

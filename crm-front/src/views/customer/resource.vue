@@ -91,7 +91,7 @@
     <!-- 移交 -->
       
       <el-dialog title="移交" :visible.sync="dialogHandover" width="30%">
-        <el-form :model="customerForm">
+        <el-form :model="handoverForm" :rules="handoverRules" ref="handoverForm">
           <el-form-item label="客户姓名" :label-width="formLabelWidth">
             <el-input
               v-model="customerForm.name"
@@ -110,7 +110,7 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="新营销人员" :label-width="formLabelWidth">
+          <el-form-item label="新营销人员" :label-width="formLabelWidth" prop="newSeller">
             <el-select v-model="handoverForm.newSeller" placeholder="">
               <el-option
                 v-for="employee in emploeeList"
@@ -120,7 +120,7 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="移交原因" :label-width="formLabelWidth">
+          <el-form-item label="移交原因" :label-width="formLabelWidth" prop="transReason">
             <el-input
             type="textarea"
               v-model="handoverForm.transReason"
@@ -130,13 +130,13 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogHandover = false">取 消</el-button>
-          <el-button type="primary" @click="saveHandover()">提 交</el-button>
+          <el-button type="primary" @click="saveHandover('handoverForm')">提 交</el-button>
         </div>
       </el-dialog>
 
 <!-- 移交给我 -->   
       <el-dialog title="移交给我" :visible.sync="dialogHandover2" width="30%">
-        <el-form :model="customerForm">
+        <el-form :model="handoverForm" :rules="handoverRules" ref="handoverForm">
           <el-form-item label="客户姓名" :label-width="formLabelWidth">
             <el-input
               v-model="customerForm.name"
@@ -165,7 +165,7 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="移交原因" :label-width="formLabelWidth">
+          <el-form-item label="移交原因" :label-width="formLabelWidth" prop="transReason">
             <el-input
             type="textarea"
               v-model="handoverForm.transReason"
@@ -175,7 +175,7 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogHandover2 = false">取 消</el-button>
-          <el-button type="primary" @click="saveHandover()">提 交</el-button>
+          <el-button type="primary" @click="saveHandover('handoverForm')">提 交</el-button>
         </div>
       </el-dialog>
     </el-card>
@@ -213,16 +213,16 @@ export default {
       dialogFormVisible: false,
       dialogHandover: false,
       dialogHandover2:false,
-      form: {
-        name: "",
-        region: "",
-        date1: "",
-        date2: "",
-        delivery: false,
-        type: [],
-        resource: "",
-        desc: "",
-      },
+      // form: {
+      //   name: "",
+      //   region: "",
+      //   date1: "",
+      //   date2: "",
+      //   delivery: false,
+      //   type: [],
+      //   resource: "",
+      //   desc: "",
+      // },
       formLabelWidth: "120px",
       customerForm: {
         name: "",
@@ -243,6 +243,15 @@ export default {
       traceMethod: [],
       typeList: [],
       emploeeList: [],
+       //移交表单验证
+      handoverRules: {
+        transReason: [
+          { required: true, message: "请填写移交原因", trigger: "blur" },
+        ],
+        newSeller: [
+          { required: true, message: "请选择新营销人员", trigger: "change" },
+        ],
+      },
        handoverForm: {
         id:"",
         customerId: "",
@@ -311,6 +320,8 @@ export default {
     },
     //点击移交
     getInfo(id) {
+       if (this.$refs.handoverForm){
+this.$refs.handoverForm.resetFields();} 
       this.handoverForm = {};
       custApi.getInfoById(id).then((response) => {
           this.customerForm = response.data.customer;
@@ -322,6 +333,8 @@ export default {
     },
       //点击移交给我
     getInfo2(id) {
+       if (this.$refs.handoverForm){
+this.$refs.handoverForm.resetFields();} 
       this.handoverForm = {};
       custApi.getInfoById(id).then((response) => {
         this.customerForm = response.data.customer;
@@ -335,7 +348,9 @@ export default {
     
     },
 //移交
-    saveHandover() { 
+    saveHandover(handoverForm) { 
+      this.$refs[handoverForm].validate((valid) => {
+          if (valid) {
       handoverApi.add(this.handoverForm).then(response => {
           return this.$message({
             type: "success",
@@ -353,6 +368,12 @@ export default {
             message: "移交失败",
           });
         });
+          } else {
+         
+            return false;
+          }
+        });
+
     },
 
 
