@@ -10,6 +10,7 @@ NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
 const whiteList = ['/login'] // no redirect whitelist
 
+// 路由拦截器，主要验证用户是否已登录
 router.beforeEach(async(to, from, next) => {
   // start progress bar
   NProgress.start()
@@ -27,6 +28,7 @@ router.beforeEach(async(to, from, next) => {
       NProgress.done()
     } else {
       // determine whether the user has obtained his permission roles through getInfo
+      //当前登录用户的角色信息
       const hasRoles = store.getters.roles && store.getters.roles.length > 0
       if (hasRoles) {
         next()
@@ -35,11 +37,11 @@ router.beforeEach(async(to, from, next) => {
           // get user info
           // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
           const { roles } = await store.dispatch('user/getInfo')
-
-          // generate accessible routes map based on roles
+// console.log(roles)   可以获取到权限信息
+          // generate accessible routes map based on roles    根据角色信息动态生成路由表
           const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
 
-          // dynamically add accessible routes
+          // dynamically add accessible routes  动态挂载
           router.addRoutes(accessRoutes)
 
           // hack method to ensure that addRoutes is complete

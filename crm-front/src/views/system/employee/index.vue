@@ -187,8 +187,9 @@
             </el-select>
           </el-form-item>
           <el-form-item label="超级管理员" :label-width="formLabelWidth">
-            <el-radio v-model="radio" label="1" value="1">是</el-radio>
             <el-radio v-model="radio" label="0" value="0">否</el-radio>
+            <el-radio v-model="radio" label="1" value="1">是</el-radio>
+            
           </el-form-item>
           <el-form-item
             label="员工角色"
@@ -265,7 +266,7 @@ import qs from "qs";
 export default {
   data() {
     var validatePass = (rule, value, callback) => {
-      const reg = /^.{6,50}$/;
+      const reg = /^.{6,60}$/;
       if (value === "") {
         callback(new Error("请输入密码"));
       } else if (!reg.test(value)) {
@@ -320,7 +321,7 @@ export default {
         dept: [{ required: true, message: "请选择员工部门" }],
       },
       employeeQuery: {}, //查询参数
-      radio: "1",
+      radio: "0",
       deptList: null, //部门列表
       //穿梭框
       roleList: [], //所有角色列表

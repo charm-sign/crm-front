@@ -62,7 +62,7 @@
           <el-form-item label="角色名称" :label-width="formLabelWidth" prop="name" >
             <el-input v-model="roleForm.name" autocomplete="off"></el-input>
           </el-form-item>
-          <el-form-item label="角色编号" :label-width="formLabelWidth">
+          <el-form-item label="角色编号" :label-width="formLabelWidth" prop="sn">
             <el-input v-model="roleForm.sn" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item
@@ -110,6 +110,9 @@ export default {
         name: [
           { required: true, message: '请输入角色名称', trigger: 'blur' },
           // { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+        ],
+        sn: [
+          { required: true, message: '请输入角色编号', trigger: 'blur' },
         ],
       },
       title: "",

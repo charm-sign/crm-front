@@ -11,9 +11,12 @@
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar + '?imageView2/1/w/80/h/80'" class="user-avatar" />
-          <i class="el-icon-caret-bottom" />
+          <!-- <img :src="avatar + '?imageView2/1/w/80/h/80'" class="user-avatar" /> -->
+         {{name}}
+          <!-- <i class="el-icon-refresh-right" /> -->
+        <el-button type="info" icon="el-icon-more" circle></el-button>
         </div>
+        
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <router-link to="/">
             <el-dropdown-item  class="el-icon-user"> 个人中心 </el-dropdown-item> 
@@ -35,12 +38,17 @@ import Breadcrumb from "@/components/Breadcrumb";
 import Hamburger from "@/components/Hamburger";
 
 export default {
+  // data: {
+  //   return: {
+  //     name:""
+  //   }
+  // },
   components: {
     Breadcrumb,
     Hamburger,
   },
   computed: {
-    ...mapGetters(["sidebar", "avatar"]),
+    ...mapGetters(["sidebar", "avatar","name"]),
   },
   methods: {
     toggleSideBar() {

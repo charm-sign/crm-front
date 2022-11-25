@@ -6,15 +6,15 @@
         <h3 class="title">客户关系管理系统</h3>
       </div>
 
-      <el-form-item prop="username">
+      <el-form-item prop="name">
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
         <el-input
           ref="username"
-          v-model="loginForm.username"
+          v-model="loginForm.name"
           placeholder="Username"
-          name="username"
+          name="name"
           type="text"
           tabindex="1"
           auto-complete="on"
@@ -74,11 +74,11 @@ export default {
     }
     return {
       loginForm: {
-        username: '',
+       name: '',
         password: ''
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
+        name: [{ required: true, trigger: 'blur', validator: validateUsername }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
       loading: false,

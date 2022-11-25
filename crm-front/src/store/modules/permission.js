@@ -1,5 +1,5 @@
 import { asyncRoutes, constantRoutes } from '@/router'
-
+// import { getPermissionList } from '@/api/system/permission'
 /**
  * Use meta.role to determine if the current user has permission
  * @param roles
@@ -47,17 +47,34 @@ const mutations = {
 }
 
 const actions = {
-  generateRoutes({ commit }, roles) {
+  generateRoutes: async function({ commit }, roles) {
     return new Promise(resolve => {
+      // 定义变量，用来存放路由表
       let accessedRoutes
-      if (roles.includes('admin')) {
-        accessedRoutes = asyncRoutes || []
+      if (roles.includes('admin')) {   //判断当前角色列表，是否包含admin，超级管理员，所有路由都可访问
+        accessedRoutes = asyncRoutes || []    //返回自己的异步路由，路由表里 将其改造为从数据库获取（关键点）
       } else {
+        //根据角色过滤
         accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
       }
       commit('SET_ROUTES', accessedRoutes)
       resolve(accessedRoutes)
     })
+
+    // 从后台请求所有的路由信息
+    // let res =await getPermissionList()
+    // let myasyncRoutes = res.data.list
+    //   // 定义变量，用来存放路由表
+    //   let accessedRoutes
+    //   if (roles.includes('admin')) {   //判断当前角色列表，是否包含admin，超级管理员，所有路由都可访问
+    //     accessedRoutes = myasyncRoutes || []    //返回自己的异步路由，路由表里 将其改造为从数据库获取（关键点）
+    //   } else {
+    //     //根据角色过滤
+    //     accessedRoutes = filterAsyncRoutes(myasyncRoutes, roles)
+    //   }
+    //   commit('SET_ROUTES', accessedRoutes)
+    //   resolve(myasyncRoutes)
+  
   }
 }
 

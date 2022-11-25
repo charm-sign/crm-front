@@ -17,7 +17,7 @@ import request from '@/utils/request'
 // }
 export function login(data) {
   return request({
-    url: '/sysService/user/login',
+    url: '/security/login',
     method: 'post',
     data:data
   })
@@ -32,7 +32,7 @@ export function getInfo(token) {
 }
 export function logout() {
   return request({
-    url: '/sysService/user/logout',
-    method: 'post'
+    url: '/security/logout',
+    method: 'get'
   })
 }

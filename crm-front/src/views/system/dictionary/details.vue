@@ -131,7 +131,7 @@ export default {
   methods: {
     //获取所有数据
     getList() {
-      dictApi.detailList().then((response) => {
+      dictApi.detailList2().then((response) => {
         this.dictionaryDetailList = response.data.dictionaryDetailList;
       });
     },

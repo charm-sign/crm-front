@@ -47,6 +47,12 @@ export default {    //写法，不用每次写方法都导出
             method: 'get'
         })
     },
+    detailList2() {
+        return request({
+            url: `sysService/dictionary/detailList2`,
+            method: 'get'
+        })
+    },
 
     //添加字典明细
     addDetail(parentId,detailForm) { 

@@ -37,11 +37,11 @@ export const constantRoutes = [
     hidden: true
   },
 
-  {
-    path: '/404',
-    component: () => import('@/views/404'),
-    hidden: true
-  },
+  // {
+  //   path: '/404',
+  //   component: () => import('@/views/404'),
+  //   hidden: true
+  // },
 
   {
     path: '/',
@@ -55,6 +55,18 @@ export const constantRoutes = [
     },
       ]
   },
+  
+
+]
+export default new Router({
+  routes: constantRoutes
+});
+/**
+ * asyncRoutes 动态路由
+ * the routes that need to be dynamically loaded based on user roles
+ */
+export const asyncRoutes = [
+
   {
     path: '/system',
     component: Layout,
@@ -66,37 +78,38 @@ export const constantRoutes = [
         path: 'role',
         name: 'Role',
         component: () => import('@/views/system/role/index'),
-        meta: { title: '角色管理' }
+        meta: { roles: ['role:list'], title: '角色管理' }
+         //有此权限才能访问此页面
       },
       {
         path: 'permission',
         name: 'Permission',
         component: () => import('@/views/system/permission/index'),
-        meta: { title: '权限管理' }
+        meta: { roles: ['permission:list'], title: '权限管理' }
       },
       {
         path: 'department',
         name: 'Department',
         component: () => import('@/views/system/department/index'),
-        meta: { title: '部门管理' }
+        meta: { roles: ['department:list'], title: '部门管理' }
       },
       {
         path: 'employee',
         name: 'Employee',
         component: () => import('@/views/system/employee/index'),
-        meta: { title: '员工管理' }
+        meta: { roles: ['employee:list'], title: '员工管理' }
       },
       {
         path: 'dictionaryl',
         name: 'Dictionaryl',
         component: () => import('@/views/system/dictionary/list'),
-        meta: { title: '字典列表' }
+        meta: { roles: ['dictionaryContents:list'], title: '字典列表' }
       },
       {
         path: 'dictionaryd',
         name: 'Dictionaryd',
         component: () => import('@/views/system/dictionary/details'),
-        meta: { title: '字典明细' }
+        meta: { roles: ['dictionaryDetails:list'], title: '字典明细' }
       },
     ]
   },
@@ -111,36 +124,34 @@ export const constantRoutes = [
         path: 'potential',
         name: 'Potential',
         component: () => import('@/views/customer/potential'),
-        meta: { title: '潜在客户管理' }
+        meta: { roles: ['customer:list'], title: '潜在客户管理' }
       },
       {
         path: 'official',
         name: 'Official',
         component: () => import('@/views/customer/official'),
-        meta: { title: '正式客户管理' }
+        meta: { roles: ['customer:list'], title: '正式客户管理' }
       },
       {
         path: 'resource',
         name: 'Resource',
         component: () => import('@/views/customer/resource'),
-        meta: { title: '客户资源池' }
+        meta: { roles: ['customerPool:list'],title: '客户资源池' }
       },
       {
         path: 'followHistory',
         name: 'FollowHistory',
         component: () => import('@/views/customer/followHistory'),
-        meta: { title: '跟进历史' }
+        meta: { roles: ['followHistory:list'], title: '跟进历史' }
       },
       {
         path: 'handoverHistory',
         name: 'HandoverHistory',
         component: () => import('@/views/customer/handoverHistory'),
-        meta: { title: '移交历史' }
+        meta: { roles: ['transferHistory:list'], title: '移交历史' }
       },
     ]
   },
-
-
   {
     path: '/statistics',
     component: Layout,
@@ -149,7 +160,7 @@ export const constantRoutes = [
         path: 'index',
         name: 'Statistics',
         component: () => import('@/views/statistics/index'),
-        meta: { title: '统计分析', icon: 'chart' }
+        meta: { roles: ['statisticalAnalysis:list'], title: '统计分析', icon: 'chart' }
       },
       {
         path: 'chart',
@@ -157,7 +168,7 @@ export const constantRoutes = [
         name: 'StatisticsDayChart',
         component: () => import('@/views/statistics/chart'),
         meta: { title: '柱状图' }
-      } ,
+      },
       {
         path: 'chart2',
         hidden: true,
@@ -165,29 +176,9 @@ export const constantRoutes = [
         name: 'StatisticsDayChart',
         component: () => import('@/views/statistics/chart2'),
         meta: { title: '饼图' }
-      }  
-    ]
-  }
-]
-
-/**
- * asyncRoutes
- * the routes that need to be dynamically loaded based on user roles
- */
-export const asyncRoutes = [
-
-
-  {
-    path: 'external-link',
-    component: Layout,
-    children: [
-      {
-        path: 'https://gitee.com/charmsign/crm-front',
-        meta: { title: 'External Link', icon: 'link' }
       }
     ]
   },
-
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
@@ -206,4 +197,4 @@ export function resetRouter() {
   router.matcher = newRouter.matcher // reset router
 }
 
-export default router
+// export default router
